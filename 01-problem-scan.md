@@ -3,49 +3,54 @@
 **Nhóm:** DILO
 **Thành viên:** Phan Hoàng Phúc (trưởng nhóm, phhp04phuc@gmail.com); Nguyễn Duy Hưng (email: cần bổ sung)
 
-> Mọi con số trong tài liệu này là **giả định để scoping**, chưa phải dữ liệu thật của Vingroup.
+> Nhóm chưa có dữ liệu nội bộ. Thời gian và tổn thất thật để **"cần đo"**; các con số mục tiêu là đề xuất, không phải số liệu đã xảy ra.
 
 ## Phase 1 — SCAN
 
 | # | Subsidiary | Lens | Mô tả ngắn bài toán |
 |---|---|---|---|
-| 1 | Xanh SM | Pain từ người khác | Tài xế chỉ biết sắp hết pin khi đã nguy cấp, tổng đài xử lý sau khi sự cố xảy ra |
-| 2 | Xanh SM / V-Green | Tốn thời gian | Tài xế tới trạm mới biết hết chỗ, phải xếp hàng hoặc chạy sang trạm khác |
-| 3 | Xanh SM | Lặp lại | Điều phối viên gọi điện từng trạm để xác nhận tình trạng cổng sạc |
-| 4 | VinFast | Lặp lại | So khớp hoá đơn sạc với lịch sử phiên sạc thủ công |
-| 5 | Vinhomes | AI có thể tốt hơn | Phản hồi cư dân về sự cố trạm sạc trong khu đô thị còn chậm và rập khuôn |
+| 1 | Xanh SM / V-Green | Pain từ người khác | Bản đồ chỉ cho tìm trạm gần, không dự báo trạm còn chỗ lúc xe tới; nhiều tài xế có thể cùng tới một trạm |
+| 2 | Xanh SM | Tốn thời gian | Thời gian tài xế tới trạm rồi phải chờ hoặc đổi trạm là thời gian không chạy cuốc |
+| 3 | V-Green | AI có thể tốt hơn | Trạm bị xe đỗ quá giờ chiếm cổng; nhắc nhở và tính phí chỉ xử lý sau khi xảy ra |
+| 4 | Xanh SM | Lặp lại | Tài xế tự cân nhắc nhận thêm cuốc hay đi sạc, dễ quyết định muộn |
+| 5 | Vinhomes | Pain từ người khác | Trụ sạc chung cư bị chiếm chỗ làm cư dân khó sạc giờ cao điểm |
 
 ## Phase 2 — 3 Quick Problem Cards
 
-### Card #1 — Điều phối pin toàn đội xe theo thời gian thực (bài toán được chọn)
-- **Bài toán:** Không có một màn hình chung cho biết xe nào sắp hết pin và trạm nào còn chỗ, nên đội xe chỉ phản ứng sau khi sự cố xảy ra.
-- **Công ty:** Xanh SM (phối hợp dữ liệu trạm sạc V-Green)
-- **Actor:** Điều phối viên, tài xế
-- **Workflow hiện tại:** 1. Tài xế thấy pin thấp → 2. Gọi tổng đài → 3. Điều phối viên tra trạm, gọi xác nhận → 4. Nhắn chỉ đường hoặc gọi xe cứu hộ
-- **Bước tệ nhất:** Bước 3 (⏱ 8 phút/lượt, giả định)
-- **AI nhảy vào:** Dự báo nguy cơ, tổng hợp trạng thái, soạn đề xuất cho người duyệt
-- **Metric:** Giảm thời gian xử lý từ 15 phút xuống dưới 3 phút; giảm 50% ca xe cạn pin giữa đường
+### Card #1 — Điều phối sạc toàn đội xe theo thời gian thực (được chọn)
+- **Bài toán:** Mỗi tài xế tự chọn trạm gần nhất dựa trên thông tin lúc tìm kiếm, không biết xe khác đang tới đâu và không dự báo được trạm còn chỗ khi tới nơi.
+- **Công ty:** Xanh SM, phối hợp V-Green
+- **Actor:** Tài xế; bộ phận vận hành đội xe
+- **Workflow hiện tại:** 1. Xem % pin trên màn hình → 2. Tìm trạm gần nhất trên bản đồ/app → 3. Lái tới → 4. Nếu đông thì chờ hoặc tìm trạm khác → 5. Sạc
+- **Bước tệ nhất:** Bước 4 (⏱ cần đo)
+- **AI nhảy vào:** Dự báo pin theo lộ trình và cuốc, dự báo chỗ trống, soạn đề xuất
+- **Metric mục tiêu:** Giảm 30% thời gian từ lúc quyết định sạc đến lúc cắm sạc
 - **Quick Architecture:** [x] Rule [x] LLM [ ] Agent
 
-### Card #2 — Giờ cao điểm hàng chờ trạm sạc
-- **Bài toán:** Nhiều xe cùng sạc giờ cao điểm làm tăng thời gian chết.
-- **Công ty:** Xanh SM
-- **Actor:** Tài xế
-- **Workflow hiện tại:** 1. Tự chọn trạm → 2. Tới nơi → 3. Xếp hàng → 4. Sạc
-- **Bước tệ nhất:** Xếp hàng (⏱ 20 phút/lượt, giả định)
-- **AI nhảy vào:** Không bắt buộc; thuật toán phân bổ đủ dùng
-- **Metric:** Giảm thời gian chờ trung bình 30%
+### Card #2 — Giảm xe chiếm cổng sau khi sạc xong
+- **Bài toán:** Xe đỗ quá giờ làm giảm số cổng khả dụng.
+- **Công ty:** V-Green
+- **Actor:** Tài xế, khách hàng chờ sạc
+- **Workflow hiện tại:** 1. Sạc xong → 2. Hết 10 phút miễn phí → 3. Tính phí quá giờ
+- **Bước tệ nhất:** Bước 3 (⏱ cần đo)
+- **AI nhảy vào:** Không cần; thông báo theo rule là đủ
+- **Metric mục tiêu:** Giảm 30% phút đỗ quá giờ
 - **Quick Architecture:** [x] Rule
 
-### Card #3 — Đối soát hoá đơn sạc
-- **Bài toán:** Đối soát thủ công chênh lệch hoá đơn sạc.
-- **Công ty:** VinFast
-- **Actor:** Nhân viên kế toán
-- **Workflow hiện tại:** 1. Xuất log → 2. So hoá đơn → 3. Tìm chênh lệch → 4. Liên hệ xử lý
-- **Bước tệ nhất:** Tìm chênh lệch (⏱ 10 phút/lượt, giả định)
-- **AI nhảy vào:** Giải thích chênh lệch bất thường
-- **Metric:** 90% hoá đơn tự đối soát dưới 1 phút
+### Card #3 — Trợ lý quyết định nhận cuốc hay đi sạc
+- **Bài toán:** Tài xế nhận cuốc dài khi pin không đủ để về trạm thuận tiện.
+- **Công ty:** Xanh SM
+- **Actor:** Tài xế
+- **Workflow hiện tại:** 1. Nhận đề xuất cuốc → 2. Tự ước lượng pin → 3. Quyết định
+- **Bước tệ nhất:** Bước 2 (⏱ cần đo)
+- **AI nhảy vào:** Dự báo pin sau cuốc
+- **Metric mục tiêu:** Giảm 50% ca xuống dưới 5% pin khi đang chạy
 - **Quick Architecture:** [x] Rule [x] LLM
 
 ## Lựa chọn của nhóm
-Chọn **Card #1**, gộp cả ý của Card #2 ở mức hiển thị chỗ trống trạm. Đây là bài có rủi ro an toàn cao nhất nên cần ranh giới rõ, và khớp với prototype prompt của nhóm.
+Chọn **Card #1**, gồm cả dự báo của Card #3: gộp dữ liệu xe, trạm và chỗ trống real-time vào một máy chủ chung.
+
+## Nguồn kiểm chứng
+- [Trải nghiệm xuyên Việt: bản đồ trạm sạc trên màn hình xe](https://doanhnhan.baophapluat.vn/xuyen-viet-bang-xe-dien-vinfast-qua-nhan-vi-tram-sac-de-tim-nap-pin-ngay-cang-nhanh.html)
+- [MoMo: tra cứu trạm và cổng trống](https://www.momo.vn/tien-ich-giao-thong/tram-sac/vinfast) (bên thứ ba)
+- [VnBusiness: phí đỗ sau sạc, ưu đãi tài xế](https://vnbusiness.vn/vinfast-rut-ngan-thoi-gian-mien-phi-do-sau-sac.html)
