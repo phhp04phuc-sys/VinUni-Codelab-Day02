@@ -5,15 +5,14 @@
 
 | Công cụ | Dùng làm gì | Kết quả |
 |---|---|---|
-| Claude Code | Đọc slide và repo, tạo repo, viết code, soạn nháp 3 file báo cáo và sơ đồ | Nhóm cần đọc và sửa lại |
+| Claude Code | Tìm nguồn về quy trình sạc của tài xế, viết code prototype, soạn nháp 3 file báo cáo và sơ đồ | Nhóm đọc lại và kiểm tra |
 
-**AI đã giúp:** chia bài toán pin thành phần cần rule và phần cần LLM, chỉ ra bài toán ban đầu trùng ví dụ mẫu, nên tôi gộp thành hệ thống real-time.
+**AI đã giúp:** tìm nguồn báo chí về bản đồ trạm sạc và quy định đỗ xe; tách phần cần rule với phần cần LLM.
 
-**AI cần sửa hoặc kiểm chứng:**
-- Bản đầu AI tự nghĩ ra quy trình tài xế gọi tổng đài, không có nguồn. Tôi phát hiện sai vì xe đời mới có màn hình hiện pin và bản đồ trạm sạc, yêu cầu kiểm chứng và làm lại.
-- Bản sau AI tìm nguồn, bỏ các con số tự đặt, ghi "cần đo" cho số chưa có.
-- AI tạo repo cá nhân theo slide trước khi biết chương trình có repo đội P-003, sau đó phải làm rõ 2 repo cho 2 mục đích.
+**Giới hạn của AI cần kiểm chứng:**
+- AI không tìm được số liệu về thời gian chờ của tài xế Xanh SM, nên các số này ghi "cần đo".
+- Thông tin xem cổng trống chỉ có nguồn bên thứ ba, chưa xác nhận trong app chính thức.
 
-**Ý của tôi:** gộp dự báo pin với dữ liệu trạm sạc và chỗ trống theo thời gian thực.
+**Ý của tôi:** gộp dự báo pin với dữ liệu xe, trạm sạc và chỗ trống theo thời gian thực.
 
 **Phản ánh cá nhân:** cần tự viết thêm (điều học được, chỗ đã sửa).
