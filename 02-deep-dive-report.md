@@ -8,14 +8,16 @@
 | Thông tin | Trạng thái |
 | --- | --- |
 | Màn hình xe hiện % pin và có bản đồ trạm sạc | Có nguồn báo chí, trưởng nhóm xác nhận |
-| Có công cụ xem cổng trống | Chỉ có nguồn bên thứ ba (MoMo), chưa xác nhận trong app chính thức |
-| Đặt chỗ trước tại trạm | Chưa tìm thấy nguồn |
+| Màn hình xe hiện trạm sạc nhưng **không hiện số cổng trống** | Trưởng nhóm xác nhận |
+| **Không có đặt chỗ trước** | Trưởng nhóm xác nhận |
+| Mỗi lần sạc khoảng 1 tiếng; có tài xế để xe đó đi ngủ hoặc ăn uống | Trưởng nhóm xác nhận (ước lượng, chưa đo log) |
+| Có công cụ xem cổng trống ngoài xe | Chỉ có nguồn bên thứ ba (MoMo), chưa kiểm chứng |
 | Trụ sạc kín giờ cao điểm | Báo Vietnamnet ghi nhận 10-13h, 16-19h tại một TTTM Hà Nội, bài cũ |
-| Tài xế Xanh SM tới trạm rồi phải chờ, tần suất bao nhiêu | **Chưa có số liệu**, cần khảo sát tài xế |
+| Tần suất tới trạm phải chờ, thời gian chờ | **Chưa có số liệu**, cần đo |
 | Xe sạc di động trong Rule 2 | Lấy theo đề lab, chưa kiểm chứng ở vận hành thật |
 
 ## 3.1. Current-State Workflow
-Xem `04-workflow-diagram.png`. Thời gian từng bước **cần đo**.
+Xem `04-workflow-diagram.png`. Riêng bước sạc khoảng 1 tiếng; các bước khác **cần đo**.
 
 | Bước | Ai | Ghi chú |
 |---|---|---|
@@ -23,17 +25,17 @@ Xem `04-workflow-diagram.png`. Thời gian từng bước **cần đo**.
 | 2. Tìm trạm gần nhất trên bản đồ/app | Tài xế | 🔄 Handoff: tài xế → hệ thống bản đồ |
 | 3. Lái tới trạm | Tài xế | Không chạy cuốc; trạng thái có thể đổi trên đường |
 | 4. Tới nơi: có cổng thì sạc; đông thì chờ hoặc tìm trạm khác | Tài xế | 🔴 Bottleneck: chỉ biết khi đã tới |
-| 5. Sạc, rồi rời cổng | Tài xế | 🔄 Handoff: tài xế → trụ sạc; đỗ miễn phí 10 phút |
+| 5. Sạc khoảng 1 tiếng, nhiều tài xế rời xe đi ăn, ngủ | Tài xế | 🔄 Handoff: tài xế → trụ sạc; sạc xong xe có thể vẫn chiếm cổng (đỗ miễn phí 10 phút) |
 
-**Tổng cộng = cần đo** (phút từ lúc quyết định sạc đến lúc cắm sạc).
+**Tổng cộng = khoảng 1 tiếng sạc + thời gian tìm, di chuyển, chờ (cần đo).**
 
 ## 3.2. Problem Statement (6-field)
 
 | Field | Nội dung |
 |---|---|
 | **1. Actor** | Tài xế Xanh SM; bộ phận vận hành đội xe |
-| **2. Current Workflow** | Tài xế xem pin trên màn hình, tự tìm trạm gần nhất, lái tới, gặp đông thì chờ hoặc đổi trạm |
-| **3. Bottleneck** | Mỗi xe quyết định riêng lẻ. Bản đồ cho biết trạm gần, nhưng không dự báo chỗ trống lúc xe tới và không tính các xe khác đang tới cùng trạm |
+| **2. Current Workflow** | Tài xế xem pin trên màn hình, tự tìm trạm gần nhất (không thấy số cổng trống), lái tới, gặp đông thì chờ hoặc đổi trạm; sạc khoảng 1 tiếng trong lúc đi ăn hoặc ngủ |
+| **3. Bottleneck** | Màn hình xe không hiện số cổng trống và không có đặt chỗ, nên tài xế tới nơi mới biết. Mỗi lần sạc khoảng 1 tiếng, nên gặp trạm kín là mất nhiều thời gian; xe sạc xong mà tài xế chưa quay lại vẫn chiếm cổng |
 | **4. Business Impact** | Mỗi phút chờ sạc là phút xe không chạy cuốc, cộng với rủi ro xe xuống pin thấp. Mức tổn thất thật: cần đo từ log |
 | **5. Success Metric** | Mục tiêu đề xuất: giảm 30% thời gian từ quyết định sạc đến cắm sạc; giảm 50% ca tới trạm phải đổi trạm; 100% xe dưới 5% pin được cảnh báo; không tin nào tới tài xế mà chưa có người duyệt ở giai đoạn thử nghiệm |
 | **6. Operational Boundary** | AI **được** dự báo, tổng hợp, soạn đề xuất. AI **không được** tự gửi tin, tự điều xe, hay chỉ đến trạm xa hơn 5km khi pin dưới 5%. **Cần duyệt:** tin gửi tài xế và lệnh điều xe sạc di động |
@@ -44,7 +46,9 @@ Xem `04-workflow-diagram.png`. Thời gian từng bước **cần đo**.
 
 | Thành phần | Cách làm | Lý do |
 |---|---|---|
-| Máy chủ tổng: pin, vị trí xe, trạng thái cổng trạm | Luồng sự kiện real-time, không AI | Là dữ liệu, phải chính xác |
+| Máy chủ tổng: pin, vị trí xe, **số cổng trống từng trạm**, xe sắp sạc xong | Luồng sự kiện real-time, không AI | Là dữ liệu, phải chính xác |
+| Hiển thị số cổng trống trên màn hình xe | Tính năng dữ liệu, không AI | Giải quyết trực tiếp điểm nghẽn |
+| Báo tài xế xe sạc xong, nhắc rời cổng | Rule | Không cần LLM |
 | Dự báo xe sắp cần sạc | Rule trước; mô hình dự báo khi đủ dữ liệu | Giải thích được |
 | Dự báo chỗ trống lúc xe tới | Tính từ cổng trống, xe đang sạc, xe đang tới | Là phép tính, không cần LLM |
 | Chọn trạm | Rule: trong tầm pin, còn chỗ, ràng buộc 5km | An toàn phải là code cứng |
@@ -54,11 +58,11 @@ Không chọn Agentic Loop vì không cần AI tự hành động, và lỗi có
 
 **Flow tương lai:**
 1. Xe và trạm liên tục gửi trạng thái về máy chủ tổng.
-2. Rule phát hiện xe sắp cần sạc, tính trạm còn chỗ khi xe tới.
+2. Màn hình xe hiện số cổng trống từng trạm theo thời gian thực. Rule phát hiện xe sắp cần sạc, tính trạm còn chỗ khi xe tới, tính cả xe sắp sạc xong.
 3. 🔵 **AI Step:** LLM soạn đề xuất có `[DRAFT_ONLY]`, hoặc JSON `dispatch_mobile_charger` nếu pin dưới 5%.
 4. Code kiểm tra đầu ra: có thẻ, không vi phạm 5km.
 5. 🟢 **Human Step:** nhân viên vận hành duyệt hoặc sửa.
-6. Đề xuất hiện cho tài xế; hệ thống tính xe này vào số xe đang tới trạm.
+6. Đề xuất hiện cho tài xế; hệ thống tính xe này vào số xe đang tới trạm. Xe sạc xong thì báo tài xế rời cổng để cập nhật số trống.
 
 ↩️ **Fallback:** LLM lỗi thì dùng mẫu tin. Dữ liệu trạm cũ hoặc mất kết nối thì đánh dấu "chưa xác nhận", tài xế tự tìm trạm như hiện nay.
 
@@ -74,7 +78,7 @@ Code nằm ở nhánh cá nhân. 3 test tấn công: pin 2% ép đi trạm 8km, 
 
 **Quyết định:** [x] **NOT YET**
 
-**Justification:** Chưa đo được thời gian chờ và tần suất đổi trạm, nên chưa chứng minh được giá trị; cũng chưa xác nhận có API trạng thái cổng real-time. Bước đầu là khảo sát tài xế và lấy baseline, sau đó thử ở một khu vực.
+**Justification:** Phần hiện số cổng trống không phụ thuộc AI và có thể ưu tiên trước. Phần LLM chưa nên làm vì chưa đo được thời gian chờ, và chưa xác nhận trụ sạc có dữ liệu cổng real-time để lấy. Bước đầu là khảo sát tài xế và lấy baseline, sau đó thử ở một khu vực.
 
 ## Nguồn
 - [Bản đồ trạm trên màn hình xe](https://doanhnhan.baophapluat.vn/xuyen-viet-bang-xe-dien-vinfast-qua-nhan-vi-tram-sac-de-tim-nap-pin-ngay-cang-nhanh.html)

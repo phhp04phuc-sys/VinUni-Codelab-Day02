@@ -9,19 +9,19 @@
 
 | # | Subsidiary | Lens | Mô tả ngắn bài toán |
 |---|---|---|---|
-| 1 | Xanh SM / V-Green | Pain từ người khác | Bản đồ chỉ cho tìm trạm gần, không dự báo trạm còn chỗ lúc xe tới; nhiều tài xế có thể cùng tới một trạm |
+| 1 | Xanh SM / V-Green | Pain từ người khác | Màn hình xe không hiện số cổng trống, không đặt chỗ được; nhiều tài xế có thể cùng tới một trạm |
 | 2 | Xanh SM | Tốn thời gian | Thời gian tài xế tới trạm rồi phải chờ hoặc đổi trạm là thời gian không chạy cuốc |
-| 3 | V-Green | AI có thể tốt hơn | Trạm bị xe đỗ quá giờ chiếm cổng; nhắc nhở và tính phí chỉ xử lý sau khi xảy ra |
+| 3 | V-Green | AI có thể tốt hơn | Tài xế để xe sạc rồi đi ăn, ngủ; sạc xong xe vẫn chiếm cổng |
 | 4 | Xanh SM | Lặp lại | Tài xế tự cân nhắc nhận thêm cuốc hay đi sạc, dễ quyết định muộn |
 | 5 | Vinhomes | Pain từ người khác | Trụ sạc chung cư bị chiếm chỗ làm cư dân khó sạc giờ cao điểm |
 
 ## Phase 2 — 3 Quick Problem Cards
 
 ### Card #1 — Điều phối sạc toàn đội xe theo thời gian thực (được chọn)
-- **Bài toán:** Mỗi tài xế tự chọn trạm gần nhất dựa trên thông tin lúc tìm kiếm, không biết xe khác đang tới đâu và không dự báo được trạm còn chỗ khi tới nơi.
+- **Bài toán:** Màn hình xe hiện trạm sạc nhưng không có số cổng trống và không đặt chỗ được, nên tài xế tới nơi mới biết trạm kín; mỗi lần sạc khoảng 1 tiếng nên chờ rất tốn thời gian.
 - **Công ty:** Xanh SM, phối hợp V-Green
 - **Actor:** Tài xế; bộ phận vận hành đội xe
-- **Workflow hiện tại:** 1. Xem % pin trên màn hình → 2. Tìm trạm gần nhất trên bản đồ/app → 3. Lái tới → 4. Nếu đông thì chờ hoặc tìm trạm khác → 5. Sạc
+- **Workflow hiện tại:** 1. Xem % pin trên màn hình → 2. Tìm trạm gần nhất trên bản đồ/app → 3. Lái tới → 4. Nếu đông thì chờ hoặc tìm trạm khác → 5. Sạc khoảng 1 tiếng
 - **Bước tệ nhất:** Bước 4 (⏱ cần đo)
 - **AI nhảy vào:** Dự báo pin theo lộ trình và cuốc, dự báo chỗ trống, soạn đề xuất
 - **Metric mục tiêu:** Giảm 30% thời gian từ lúc quyết định sạc đến lúc cắm sạc
